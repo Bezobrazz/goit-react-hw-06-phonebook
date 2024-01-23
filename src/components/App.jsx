@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { StyledContainer } from './styled';
 import { Typography } from '@mui/material';
 import ContactForm from './ContactForm';
@@ -6,24 +7,12 @@ import Filter from './Filter';
 import ContactList from './ContactList';
 import { Notify } from 'notiflix';
 import { nanoid } from 'nanoid';
+import { addContact, deleteContact, setFilter } from '../redux/contactsSlice';
 
-export const App = () => {
-  const [contacts, setContacts] = useState(() => {
-    const savedContacts = JSON.parse(localStorage.getItem('contacts'));
-    return (
-      savedContacts || [
-        { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-        { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-        { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-        { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-      ]
-    );
-  });
-  const [filter, setFilter] = useState('');
-
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
+const App = () => {
+  const contacts = useSelector(state => state.contacts.contacts);
+  const filter = useSelector(state => state.contacts.filter);
+  const dispatch = useDispatch();
 
   const onFormSubmit = ({ name, number }) => {
     const isNameAlreadyExist = contacts.some(
@@ -35,24 +24,18 @@ export const App = () => {
         `Contact with name '${name}' already exists in the phonebook.`
       );
     } else {
-      const uniqueId = nanoid();
-      setContacts(prevContacts => [
-        { id: uniqueId, name, number },
-        ...prevContacts,
-      ]);
+      dispatch(addContact({ id: nanoid(), name, number }));
     }
+  };
+
+  const onDeleteContact = contactId => {
+    dispatch(deleteContact(contactId));
+    Notify.success('Contact deleted successfully.');
   };
 
   const onInputChange = e => {
     const { value } = e.currentTarget;
-    setFilter(value);
-  };
-
-  const onDeleteContact = contactId => {
-    setContacts(prevContacts =>
-      prevContacts.filter(contact => contact.id !== contactId)
-    );
-    Notify.success('Contact deleted successfully.');
+    dispatch(setFilter(value));
   };
 
   const filteredContacts = contacts.filter(contact =>
@@ -64,7 +47,7 @@ export const App = () => {
       <Typography variant="h1" align="center" fontSize="60px" gutterBottom>
         Phonebook
       </Typography>
-      <ContactForm contacts={contacts} onFormSubmit={onFormSubmit} />
+      <ContactForm onFormSubmit={onFormSubmit} />
       <Typography variant="h2" align="center" fontSize="40px" gutterBottom>
         Contacts
       </Typography>
@@ -76,3 +59,5 @@ export const App = () => {
     </StyledContainer>
   );
 };
+
+export default App;
