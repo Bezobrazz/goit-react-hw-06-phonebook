@@ -2,8 +2,13 @@ import React from 'react';
 import { StyledContainer } from './styled';
 import { Typography, Input } from '@mui/material';
 import { setFilter } from '../redux/contactsSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectFilter } from '../redux/selectors';
 
-const Filter = ({ value, dispatch }) => {
+const Filter = () => {
+  const dispatch = useDispatch();
+  const value = useSelector(selectFilter);
+
   const onInputChange = e => {
     const { value } = e.currentTarget;
     dispatch(setFilter(value));

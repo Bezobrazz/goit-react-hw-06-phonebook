@@ -3,8 +3,14 @@ import { StyledList, StyledListItem, BoldText } from './styled';
 import { Button } from '@mui/material';
 import { Notify } from 'notiflix';
 import { deleteContact } from '../redux/contactsSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectFilter, selectContacts } from '../redux/selectors';
 
-const ContactList = ({ contacts, dispatch, filter }) => {
+const ContactList = () => {
+  const contacts = useSelector(selectContacts);
+  const filter = useSelector(selectFilter);
+  const dispatch = useDispatch();
+
   const onDeleteContact = contactId => {
     dispatch(deleteContact(contactId));
     Notify.success('Contact deleted successfully.');

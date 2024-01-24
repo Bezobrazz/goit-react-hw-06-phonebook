@@ -3,11 +3,16 @@ import { StyledForm, StyledLabel, StyledLabelWrapper } from './styled';
 import { Button, TextField } from '@mui/material';
 import { nanoid } from '@reduxjs/toolkit';
 import { Notify } from 'notiflix';
+import { useSelector, useDispatch } from 'react-redux';
 import { addContact } from '../redux/contactsSlice';
+import { selectContacts } from '../redux/selectors';
 
-const ContactForm = ({ contacts, dispatch }) => {
+const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+
+  const contacts = useSelector(selectContacts);
+  const dispatch = useDispatch();
 
   const onFormSubmit = ({ name, number }) => {
     const isNameAlreadyExist = contacts.some(
