@@ -1,10 +1,27 @@
 import React, { useState } from 'react';
 import { StyledForm, StyledLabel, StyledLabelWrapper } from './styled';
 import { Button, TextField } from '@mui/material';
+import { nanoid } from '@reduxjs/toolkit';
+import { Notify } from 'notiflix';
+import { addContact } from '../redux/contactsSlice';
 
-const ContactForm = ({ onFormSubmit }) => {
+const ContactForm = ({ contacts, dispatch }) => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+
+  const onFormSubmit = ({ name, number }) => {
+    const isNameAlreadyExist = contacts.some(
+      contact => contact.name.toLowerCase() === name.toLowerCase()
+    );
+
+    if (isNameAlreadyExist) {
+      Notify.failure(
+        `Contact with name '${name}' already exists in the phonebook.`
+      );
+    } else {
+      dispatch(addContact({ id: nanoid(), name, number }));
+    }
+  };
 
   const onNameChange = e => {
     setName(e.target.value);
